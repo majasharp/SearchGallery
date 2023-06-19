@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SearchGallery.Persistence\SearchGallery.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

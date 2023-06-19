@@ -9,17 +9,18 @@ using System.Threading.Tasks;
 
 namespace SearchGallery.Services
 {
-    public class GalleryService
+    public class GalleryService : IGalleryService
     {
         private readonly ILogger<GalleryService> _logger;
         private readonly SearchGalleryDbContext _context;
+        
         public GalleryService(ILogger<GalleryService> logger, SearchGalleryDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-        public async Task<byte[]> GetGalleryItemAsync(Guid guid)
+        public async Task<byte[]> GetGalleryItemAsync(Guid guid, bool tryDownloadThumbnail)
         {
 
         }

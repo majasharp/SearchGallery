@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SearchGallery.Persistence\SearchGallery.Persistence.csproj" />
+    <ProjectReference Include="..\SearchGallery.Services\SearchGallery.Services.csproj" />
   </ItemGroup>
 
 </Project>
