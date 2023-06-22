@@ -9,9 +9,9 @@ namespace SearchGallery.Api.Controllers
     public class GalleryController : ControllerBase
     {
         private readonly ILogger<GalleryController> _logger;
-        private readonly GalleryService _service;
+        private readonly IGalleryService _service;
 
-        public GalleryController(ILogger<GalleryController> logger, GalleryService service)
+        public GalleryController(ILogger<GalleryController> logger, IGalleryService service)
         {
             _logger = logger;
             _service = service;
@@ -35,7 +35,7 @@ namespace SearchGallery.Api.Controllers
         public async Task<IActionResult> UploadGalleryItem(IFormFile file)
         {
             var stream = file.OpenReadStream();
-            var result = await _service.UploadGalleryItemAsync(stream);
+            var result = await _service.UploadGalleryItemAsync(stream, Path.GetExtension(file.FileName));
             return Ok(result);
         }
 

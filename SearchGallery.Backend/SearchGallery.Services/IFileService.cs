@@ -8,9 +8,9 @@ namespace SearchGallery.Services
 {
     public interface IFileService
     {
-        void StoreAsync(Guid guid, Stream stream);
-        Task<Stream> RetrieveAsync(Guid guid);
-        void DeleteAsync(Guid guid);
+        Task StoreAsync(Guid guid, Stream stream, string extension);
+        Stream Retrieve(Guid guid, string extension);
+        void Delete(Guid guid);
         Task MakeThumbnailAsync(Stream stream, string filePath);
     }
 }

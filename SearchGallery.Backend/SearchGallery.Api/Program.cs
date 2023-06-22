@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SearchGallery.Persistence;
+using SearchGallery.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<SearchGalleryDbContext>(options =>
 );
 
 builder.Services.AddScoped<SearchGalleryDbContext>();
+builder.Services.Configure<StorageConfiguration>(builder.Configuration.GetSection("StorageConfiguration"));
 
 var app = builder.Build();
 

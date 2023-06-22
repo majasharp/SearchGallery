@@ -1,5 +1,4 @@
 ﻿
-using static System.Net.Mime.MediaTypeNames;
 using System.Drawing;
 
 public static class ThumbnailResizer

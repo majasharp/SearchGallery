@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SearchGallery.Persistence\SearchGallery.Persistence.csproj" />
+	<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
 </Project>

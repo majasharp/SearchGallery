@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SearchGallery.Services
 {
-    internal interface IGalleryService
+    public interface IGalleryService
     {
         Task<byte[]> GetGalleryItemAsync(Guid guid, bool tryDownloadThumbnail);
         Task<List<GalleryItemDto>> GetGalleryItemsAsync(SearchQuery query);
-        Task<GalleryItemDto> UploadGalleryItemAsync(Stream file);
+        Task<GalleryItemDto> UploadGalleryItemAsync(Stream file, string fileName);
         Task DeleteGalleryItemAsync(Guid guid);
     }
 }
