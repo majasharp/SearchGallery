@@ -25,10 +25,13 @@ namespace SearchGallery.Services
             _config = config.Value;
         }
 
-        public async Task StoreAsync(Guid guid, Stream stream, string extension)
+        public async Task<string> StoreAsync(Guid guid, Stream stream, string extension)
         {
-            await using var outgoingStream = File.OpenWrite($"{_config.BaseDirectory}/{guid}.{extension}");
+            var path = $"{_config.BaseDirectory}/{guid}.{extension}";
+            await using var outgoingStream = File.OpenWrite(path);
             await stream.CopyToAsync(outgoingStream);
+
+            return path;
         }
 
         public Stream Retrieve(Guid guid, string extension)

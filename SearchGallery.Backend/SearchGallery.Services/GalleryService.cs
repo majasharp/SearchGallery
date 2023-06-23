@@ -5,6 +5,7 @@ using SearchGallery.Persistence.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,12 +16,14 @@ namespace SearchGallery.Services
         private readonly ILogger<GalleryService> _logger;
         private readonly SearchGalleryDbContext _context;
         private readonly IFileService _fileService;
+        private readonly ISearchService _searchService;
         
-        public GalleryService(ILogger<GalleryService> logger, SearchGalleryDbContext context, IFileService fileService)
+        public GalleryService(ILogger<GalleryService> logger, SearchGalleryDbContext context, IFileService fileService, ISearchService searchService)
         {
             _logger = logger;
             _context = context;
             _fileService = fileService;
+            _searchService = searchService;
         }
 
         public async Task<byte[]> GetGalleryItemAsync(Guid guid, bool tryDownloadThumbnail)
@@ -62,12 +65,13 @@ namespace SearchGallery.Services
             {
                 Id = Guid.NewGuid(),
                 FileName = fileName,
-                SearchText = _searchService.GetSearchTextAsync(),
-                UploadedAt = DateTime.Now,
-                Vector = _searchService.VectoriseAsync()
+                UploadedAt = DateTime.Now
             };
 
-            await _fileService.StoreAsync(galleryItem.Id, file, Path.GetExtension(fileName));
+            var path = await _fileService.StoreAsync(galleryItem.Id, file, Path.GetExtension(fileName));
+
+            galleryItem.SearchText = _searchService.GetSearchText(path);
+            galleryItem.Vector = string.Join(";", await _searchService.VectoriseAsync(galleryItem.SearchText));
 
             await _context.GalleryItems.AddAsync(galleryItem);
             await _context.SaveChangesAsync();

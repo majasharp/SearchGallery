@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OpenAI_API;
 using SearchGallery.Persistence;
 using SearchGallery.Services;
 
@@ -20,6 +21,7 @@ builder.Services.AddDbContext<SearchGalleryDbContext>(options =>
 );
 
 builder.Services.AddScoped<SearchGalleryDbContext>();
+builder.Services.AddSingleton(new OpenAIAPI(Environment.GetEnvironmentVariable("OpenAIKey")));
 builder.Services.Configure<StorageConfiguration>(builder.Configuration.GetSection("StorageConfiguration"));
 
 var app = builder.Build();
