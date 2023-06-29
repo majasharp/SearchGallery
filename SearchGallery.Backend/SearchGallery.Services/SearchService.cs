@@ -16,13 +16,17 @@ namespace SearchGallery.Services
     {
         private readonly ILogger<SearchService> _logger;
         private readonly SearchGalleryDbContext _context;
-        private readonly OpenAIAPI _api;
+        private readonly OpenAIAPI? _api;
 
-        public SearchService(ILogger<SearchService> logger, SearchGalleryDbContext context, OpenAIAPI api)
+        public SearchService(ILogger<SearchService> logger, SearchGalleryDbContext context)
         {
             _logger = logger;
             _context = context;
-            _api = api;
+            var openAIKey = Environment.GetEnvironmentVariable("OpenAIKey");
+            if (!string.IsNullOrEmpty(openAIKey))
+            {
+                _api = new OpenAIAPI(openAIKey);
+            }
         }
 
         public string GetSearchText(string path)
@@ -35,6 +39,10 @@ namespace SearchGallery.Services
 
         public async Task<float[]> VectoriseAsync(string searchText)
         {
+            if(_api == null)
+            {
+                throw new ArgumentNullException(nameof(_api));
+            }
             var embedding = await _api.Embeddings.CreateEmbeddingAsync(new EmbeddingRequest
             {
                 Input = searchText,
@@ -42,6 +50,15 @@ namespace SearchGallery.Services
             });
 
             return embedding.Data.First(x => x.Embedding?.Any() ?? false).Embedding;
+        }
+
+        public List<Guid> GetSearchResults(IList<SearchVectorDto> allVectors, float[] searchVector, int numberOfResults)
+        {
+            var similarities = allVectors
+            .OrderByDescending(x => GetCosineSimilarity(x.Vector, searchVector))
+            .ToList();
+
+            return similarities.Take(numberOfResults).Select(x => x.Id).ToList();
         }
 
         private static double GetCosineSimilarity(float[] V1, float[] V2)

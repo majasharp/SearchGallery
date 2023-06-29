@@ -46,6 +46,29 @@ namespace SearchGallery.Services
 
         public async Task<List<GalleryItemDto>> GetGalleryItemsAsync(SearchQuery query)
         {
+            if(query.SmartSearchEnabled && !string.IsNullOrEmpty(query.FreeText))
+            {
+                var allVectors = await _context.GalleryItems.Select(g => new SearchVectorDto
+                {
+                    Id = g.Id,
+                    VectorString = g.Vector
+                }).ToListAsync();
+
+                allVectors.ForEach(x => x.ConvertVectorString());
+                var searchVector = await _searchService.VectoriseAsync(query.FreeText);
+
+                var ids = _searchService.GetSearchResults(allVectors, searchVector, query.PageCount ?? 10);
+
+                return (await _context.GalleryItems.Where(x => ids.Contains(x.Id)).ToListAsync()).Select(i => new GalleryItemDto
+                {
+                    FileName = i.FileName,
+                    Id = i.Id,
+                    SearchText = i.SearchText,
+                    UploadedAt = i.UploadedAt
+                })
+                .ToList();
+            }
+
             return (await _context.GalleryItems
                 .Where(x => string.IsNullOrEmpty(query.FreeText) || x.SearchText.Contains(query.FreeText))
                 .ToListAsync())
@@ -54,7 +77,7 @@ namespace SearchGallery.Services
                     Id = item.Id,
                     FileName = item.FileName,
                     SearchText = item.SearchText,
-                    UploadedAt = item.UploadedAt,
+                    UploadedAt = item.UploadedAt
                 })
                 .ToList();
         }

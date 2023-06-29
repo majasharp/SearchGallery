@@ -10,5 +10,6 @@ namespace SearchGallery.Services
     {
         string GetSearchText(string path);
         Task<float[]> VectoriseAsync(string searchText);
+        List<Guid> GetSearchResults(IList<SearchVectorDto> allVectors, float[] searchVector, int numberOfResults);
     }
 }
