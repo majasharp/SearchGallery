@@ -12,7 +12,7 @@ using Tesseract;
 
 namespace SearchGallery.Services
 {
-    public class SearchService
+    public class SearchService : ISearchService
     {
         private readonly ILogger<SearchService> _logger;
         private readonly SearchGalleryDbContext _context;

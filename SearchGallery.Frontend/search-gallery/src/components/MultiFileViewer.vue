@@ -129,8 +129,10 @@
       function upload(file) {
         const formData = new FormData();
         formData.append('file', file);
+        console.log(formData);
+        console.log(file);
         ApiClient()
-          .post("files", formData)
+          .post('gallery/upload', formData)
           .then((response) => {
             showImage(response.data, file);
           })
@@ -139,7 +141,7 @@
   
       function download(fileDetails, isThumbnail, forModal) {
           DownloadClient()
-            .get(`files/${fileDetails.id}?tryDownloadThumbnail=${isThumbnail}`, { responseType: 'arraybuffer' })
+            .get(`gallery/${fileDetails.id}?tryDownloadThumbnail=${isThumbnail}`, { responseType: 'arraybuffer' })
             .then((response) => {
               const imageBinary = 'data:image/.jpeg;base64,' + Buffer.from(response.data, 'binary').toString('base64');
               if (forModal) {
@@ -157,7 +159,7 @@
   
       function downloadToDisk(fileDetails) {
         DownloadClient()
-          .get(`files/${fileDetails.id}`, { responseType: 'arraybuffer' })
+          .get(`gallery/${fileDetails.id}`, { responseType: 'arraybuffer' })
           .then((response) => {
             var fileURL = window.URL.createObjectURL(new Blob([response.data], { type: fileDetails.contentType }));
             var fileLink = document.createElement('a');
@@ -170,7 +172,7 @@
   
       function deleteFile(fileDetails) {
         ApiClient()
-          .delete(`files/${fileDetails.id}`)
+          .delete(`gallery/${fileDetails.id}`)
           .then((response) => {
             const indexToDelete = filesToDisplay.value.findIndex((file) => file.id === fileDetails.id);
             filesToDisplay.value.splice(indexToDelete, 1);

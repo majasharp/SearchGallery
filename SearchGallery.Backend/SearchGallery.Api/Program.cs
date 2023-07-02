@@ -6,7 +6,7 @@ using SearchGallery.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddCors();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -21,6 +21,9 @@ builder.Services.AddDbContext<SearchGalleryDbContext>(options =>
 );
 
 builder.Services.AddScoped<SearchGalleryDbContext>();
+builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IGalleryService, GalleryService>();
+builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.Configure<StorageConfiguration>(builder.Configuration.GetSection("StorageConfiguration"));
 
 var app = builder.Build();
@@ -33,6 +36,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true)
+    .AllowCredentials());
 
 app.UseAuthorization();
 

@@ -1,9 +1,9 @@
 <script setup>
-import MultiFileViewer from './components/MultiFileViewer.vue'
+import HomeView from './views/HomeView.vue'
 </script>
 
 <template>
-  <multi-file-viewer></multi-file-viewer>
+  <home-view></home-view>
 </template>
 
 <style lang="scss">
