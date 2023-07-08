@@ -55,6 +55,7 @@
   import { CIcon } from '@coreui/icons-vue';
   import { cilTrash, cilCloudDownload } from '@coreui/icons';
   import { ref, toRefs, watch, computed } from 'vue';
+import { formToJSON } from 'axios';
   
   export default {
     name: 'MultiFileViewer',
@@ -129,8 +130,6 @@
       function upload(file) {
         const formData = new FormData();
         formData.append('file', file);
-        console.log(formData);
-        console.log(file);
         ApiClient()
           .post('gallery/upload', formData)
           .then((response) => {
@@ -140,21 +139,28 @@
       }
   
       function download(fileDetails, isThumbnail, forModal) {
-          DownloadClient()
-            .get(`gallery/${fileDetails.id}?tryDownloadThumbnail=${isThumbnail}`, { responseType: 'arraybuffer' })
-            .then((response) => {
-              const imageBinary = 'data:image/.jpeg;base64,' + Buffer.from(response.data, 'binary').toString('base64');
-              if (forModal) {
-                imageModalActive.value = true;
-                modalImage.value.src = imageBinary;
-                modalImage.value.actualImageLoaded = true;
-              } else {
-                fileDetails.src = imageBinary;
-                filesToDisplay.value.push(fileDetails);
-                emit('update:modelValue', filesToDisplay.value);
-              }
-            })
-            .catch((error) => emit('downloadFailed', { error }));
+        DownloadClient()
+          .get(`gallery/${fileDetails.id}?tryDownloadThumbnail=${isThumbnail}`, { responseType: 'arraybuffer' })
+          .then((response) => {
+            const bytes = new Uint8Array(response.data);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) {
+              binary += String.fromCharCode(bytes[i]);
+            }
+            const imageBinary = 'data:image/.jpeg;base64,' + btoa(binary);
+            if (forModal) {
+              imageModalActive.value = true;
+              modalImage.value.src = imageBinary;
+              modalImage.value.actualImageLoaded = true;
+            } else {
+              fileDetails.src = imageBinary;
+              filesToDisplay.value.push(fileDetails);
+              emit('update:modelValue', filesToDisplay.value);
+            }
+          })
+          .catch((error) => {
+            emit('downloadFailed', { error });
+          });
       }
   
       function downloadToDisk(fileDetails) {

@@ -15,7 +15,6 @@ export default {
         const images = ref([]);
 
         function retrieveImages() {
-            console.log("Hello");
             ApiClient().post('gallery', {})
             .then(response => {
                 images.value = response.data;

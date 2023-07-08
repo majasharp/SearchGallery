@@ -27,16 +27,25 @@ namespace SearchGallery.Services
 
         public async Task<string> StoreAsync(Guid guid, Stream stream, string extension)
         {
-            var path = $"{_config.BaseDirectory}/{guid}.{extension}";
-            await using var outgoingStream = File.OpenWrite(path);
-            await stream.CopyToAsync(outgoingStream);
+            var path = Path.ChangeExtension($"{_config.BaseDirectory}/{guid}", extension);
+            var outgoingStream = File.OpenWrite(path);
+            try
+            {
+                await stream.CopyToAsync(outgoingStream);
+            }
+            finally
+            {
+                await outgoingStream.DisposeAsync();
+            }
 
+            await MakeThumbnailAsync(File.OpenRead(path), path);
             return path;
         }
 
         public Stream Retrieve(Guid guid, string extension)
         {
-            return File.OpenRead($"{_config.BaseDirectory}/{guid}.{extension}");
+            var path = Path.ChangeExtension($"{_config.BaseDirectory}/{guid}", extension);
+            return File.OpenRead(path);
         }
 
         public void Delete(Guid guid)
@@ -48,7 +57,7 @@ namespace SearchGallery.Services
             }
         }
 
-        public async Task MakeThumbnailAsync(Stream stream, string path)
+        private async Task MakeThumbnailAsync(Stream stream, string path)
         {
             var thumbPath = Path.ChangeExtension(path, "thumb");
 

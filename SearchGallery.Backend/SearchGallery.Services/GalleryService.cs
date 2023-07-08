@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MimeTypes;
 using SearchGallery.Persistence;
 using SearchGallery.Persistence.Entities;
 using System;
@@ -26,22 +27,26 @@ namespace SearchGallery.Services
             _searchService = searchService;
         }
 
-        public async Task<byte[]> GetGalleryItemAsync(Guid guid, bool tryDownloadThumbnail)
+        public async Task<(byte[], string)> GetGalleryItemAsync(Guid guid, bool tryDownloadThumbnail)
         {
             Stream fileStream = null;
+            string extension = null;
+
             if(tryDownloadThumbnail)
             {
                 fileStream = _fileService.Retrieve(guid, "thumb");
+                extension = "thumb";
             }
             else
             {
                 var galleryItem = await _context.GalleryItems.FirstAsync(x => x.Id == guid);
-                fileStream = _fileService.Retrieve(guid, Path.GetExtension(galleryItem.FileName));
+                extension = Path.GetExtension(galleryItem.FileName);
+                fileStream = _fileService.Retrieve(guid, extension);
             }
 
             using var ms = new MemoryStream();
             fileStream.CopyTo(ms);
-            return ms.ToArray();
+            return (ms.ToArray(), MimeTypeMap.GetMimeType(extension));
         }
 
         public async Task<List<GalleryItemDto>> GetGalleryItemsAsync(SearchQuery query)

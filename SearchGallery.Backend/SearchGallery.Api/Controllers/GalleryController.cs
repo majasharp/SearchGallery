@@ -21,7 +21,7 @@ namespace SearchGallery.Api.Controllers
         public async Task<IActionResult> GetGalleryItem(Guid guid, [FromQuery] bool tryDownloadThumbnail)
         {
             var result = await _service.GetGalleryItemAsync(guid, tryDownloadThumbnail);
-            return Ok(result);
+            return File(result.Item1, result.Item2);
         }
 
         [HttpPost]

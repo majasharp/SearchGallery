@@ -11,6 +11,5 @@ namespace SearchGallery.Services
         Task<string> StoreAsync(Guid guid, Stream stream, string extension);
         Stream Retrieve(Guid guid, string extension);
         void Delete(Guid guid);
-        Task MakeThumbnailAsync(Stream stream, string filePath);
     }
 }
