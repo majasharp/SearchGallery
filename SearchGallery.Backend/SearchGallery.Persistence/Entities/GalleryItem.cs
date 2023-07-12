@@ -7,5 +7,6 @@
         public string SearchText { get; set; }
         public string? Vector { get; set; }
         public DateTime UploadedAt { get; set; }
+        public string ContentType { get; set; }
     }
 }

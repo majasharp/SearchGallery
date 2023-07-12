@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MimeTypes;
 using SearchGallery.Persistence;
@@ -29,20 +30,13 @@ namespace SearchGallery.Services
 
         public async Task<(byte[], string)> GetGalleryItemAsync(Guid guid, bool tryDownloadThumbnail)
         {
-            Stream fileStream = null;
-            string extension = null;
+            var galleryItem = await _context.GalleryItems.FirstAsync(x => x.Id == guid);
 
-            if(tryDownloadThumbnail)
-            {
-                fileStream = _fileService.Retrieve(guid, "thumb");
-                extension = "thumb";
-            }
-            else
-            {
-                var galleryItem = await _context.GalleryItems.FirstAsync(x => x.Id == guid);
-                extension = Path.GetExtension(galleryItem.FileName);
-                fileStream = _fileService.Retrieve(guid, extension);
-            }
+            var extension = tryDownloadThumbnail ? "thumb" : Path.GetExtension(galleryItem.FileName);
+
+            using Stream fileStream = tryDownloadThumbnail 
+                ? _fileService.Retrieve(guid, "thumb") 
+                : _fileService.Retrieve(guid, extension);
 
             using var ms = new MemoryStream();
             fileStream.CopyTo(ms);
@@ -69,7 +63,8 @@ namespace SearchGallery.Services
                     FileName = i.FileName,
                     Id = i.Id,
                     SearchText = i.SearchText,
-                    UploadedAt = i.UploadedAt
+                    UploadedAt = i.UploadedAt,
+                    ContentType = i.ContentType
                 })
                 .ToList();
             }
@@ -82,18 +77,23 @@ namespace SearchGallery.Services
                     Id = item.Id,
                     FileName = item.FileName,
                     SearchText = item.SearchText,
-                    UploadedAt = item.UploadedAt
+                    UploadedAt = item.UploadedAt,
+                    ContentType = item.ContentType
                 })
                 .ToList();
         }
 
         public async Task<GalleryItemDto> UploadGalleryItemAsync(Stream file, string fileName)
         {
+            var extension = Path.GetExtension(fileName);
+            var contentType = MimeTypeMap.GetMimeType(extension);
+
             var galleryItem = new GalleryItem
             {
                 Id = Guid.NewGuid(),
                 FileName = fileName,
-                UploadedAt = DateTime.Now
+                UploadedAt = DateTime.Now,
+                ContentType = contentType
             };
 
             var path = await _fileService.StoreAsync(galleryItem.Id, file, Path.GetExtension(fileName));
@@ -110,6 +110,7 @@ namespace SearchGallery.Services
                 FileName = galleryItem.FileName,
                 SearchText = galleryItem.SearchText,
                 UploadedAt = galleryItem.UploadedAt,
+                ContentType = galleryItem.ContentType
             };
         }
 

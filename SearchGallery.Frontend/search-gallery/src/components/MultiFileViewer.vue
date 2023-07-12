@@ -7,7 +7,7 @@
     <CRow class="mt-3" v-for="row in rows" :key="row">
       <CCol class="m-2" v-for="file in row" :key="file">
         <a class="position-relative" v-if="file?.src">
-          <CButton class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-info" @click.prevent="downloadToDisk(file)">
+          <CButton class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-success" @click.prevent="downloadToDisk(file)">
             <CIcon :icon="cilCloudDownload" size="sm" />
           </CButton>
           <CButton class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" @click.prevent="deleteFile(file)">
@@ -23,7 +23,7 @@
             />
           </CRow>
           <CRow>
-            <label>{{ file?.originalName?.substring(0, 20) ?? 'No filename available' }}</label>
+            <label>{{ file?.fileName?.substring(0, 20) ?? 'No filename available' }}</label>
           </CRow>
         </a>
       </CCol>
@@ -38,7 +38,7 @@
           "
         >
           <CModalHeader>
-            <CModalTitle>{{ modalImage.src ? modalImage.originalName ?? 'No filename available' : 'No image available' }}</CModalTitle>
+            <CModalTitle>{{ modalImage.src ? modalImage.fileName ?? 'No filename available' : 'No image available' }}</CModalTitle>
           </CModalHeader>
           <CModalBody>
             <CImage v-if="modalImage?.src" style="object-fit: contain" rounded class="img-fluid border border-light" :src="modalImage.src" />
@@ -55,7 +55,6 @@
   import { CIcon } from '@coreui/icons-vue';
   import { cilTrash, cilCloudDownload } from '@coreui/icons';
   import { ref, toRefs, watch, computed } from 'vue';
-import { formToJSON } from 'axios';
   
   export default {
     name: 'MultiFileViewer',
@@ -113,7 +112,8 @@ import { formToJSON } from 'axios';
       }
   
       function showImage(fileDetails, file) {
-        if (fileDetails.contentType.includes('image')) {
+        try {
+          if (fileDetails.contentType.includes('image')) {
           const fileReader = new FileReader();
           fileReader.addEventListener('load', () => {
             fileDetails.src = fileReader.result;
@@ -124,6 +124,11 @@ import { formToJSON } from 'axios';
           fileDetails.src = '/file-icon.jpg';
           filesToDisplay.value.push(fileDetails);
         }
+        }
+        catch(error) {
+          console.log(error);
+        }
+        console.log(filesToDisplay.value);
         emit('update:modelValue', filesToDisplay.value);
       }
   
@@ -170,7 +175,7 @@ import { formToJSON } from 'axios';
             var fileURL = window.URL.createObjectURL(new Blob([response.data], { type: fileDetails.contentType }));
             var fileLink = document.createElement('a');
             fileLink.href = fileURL;
-            fileLink.setAttribute('download', fileDetails.originalName);
+            fileLink.setAttribute('download', fileDetails.fileName);
             document.body.appendChild(fileLink);
             fileLink.click();
           });

@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using OpenAI_API;
 using OpenAI_API.Embedding;
+using OpenAI_API.Moderation;
 using SearchGallery.Persistence;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,11 +57,15 @@ namespace SearchGallery.Services
 
         public List<Guid> GetSearchResults(IList<SearchVectorDto> allVectors, float[] searchVector, int numberOfResults)
         {
-            var similarities = allVectors
-            .OrderByDescending(x => GetCosineSimilarity(x.Vector, searchVector))
-            .ToList();
+            var similarities = new ConcurrentBag<(double, Guid)>();
 
-            return similarities.Take(numberOfResults).Select(x => x.Id).ToList();
+            Parallel.ForEach(allVectors, x =>
+            {
+                var similarity = GetCosineSimilarity(x.Vector, searchVector);
+                similarities.Add((similarity, x.Id));
+            });
+
+            return similarities.OrderByDescending(x => x.Item1).Select(x => x.Item2).ToList();
         }
 
         private static double GetCosineSimilarity(float[] V1, float[] V2)

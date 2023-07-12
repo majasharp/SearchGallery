@@ -35,7 +35,7 @@ namespace SearchGallery.Api.Controllers
         public async Task<IActionResult> UploadGalleryItem(IFormFile file)
         {
             var stream = file.OpenReadStream();
-            var result = await _service.UploadGalleryItemAsync(stream, Path.GetExtension(file.FileName));
+            var result = await _service.UploadGalleryItemAsync(stream, file.FileName);
             return Ok(result);
         }
 
