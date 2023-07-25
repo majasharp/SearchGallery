@@ -98,6 +98,7 @@
         () => {
           if (modelValue.value != filesToDisplay.value) {
             if (modelValue.value) {
+              filesToDisplay.value = [];
               modelValue.value.forEach((file) => download(file, true));
             }
           }
@@ -128,7 +129,6 @@
         catch(error) {
           console.log(error);
         }
-        console.log(filesToDisplay.value);
         emit('update:modelValue', filesToDisplay.value);
       }
   

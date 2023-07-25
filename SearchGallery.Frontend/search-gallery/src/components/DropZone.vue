@@ -4,7 +4,7 @@
       @dragleave.prevent="toggleActive"
       @dragover.prevent
       @drop.prevent="toggleActive"
-      @drop="onDragged"
+      @drop="onDragged($event)"
       :class="{ 'active-dropzone': active }"
       class="dropzone"
     >
@@ -32,10 +32,13 @@
         emit('filesloaded', [...files.value.files]);
         files.value.value = '';
       };
-  
-      const onDragged = () => {
-        emit('filesloaded', [...files.value.files]);
-        files.value.value = '';
+
+      const onDragged = (event) => {
+        const droppedFiles = event.dataTransfer.files;
+        if (droppedFiles.length > 0) {
+          emit('filesloaded', [...droppedFiles]);
+          files.value.value = '';
+        }
       };
   
       return {

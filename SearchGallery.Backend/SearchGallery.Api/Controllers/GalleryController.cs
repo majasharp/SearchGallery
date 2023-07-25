@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using SearchGallery.Persistence.Entities;
 using SearchGallery.Services;
 
 namespace SearchGallery.Api.Controllers

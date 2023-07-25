@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SearchGallery.Services
+﻿namespace SearchGallery.Services
 {
     public class SearchQuery
     {

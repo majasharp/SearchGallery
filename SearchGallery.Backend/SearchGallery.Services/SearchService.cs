@@ -1,16 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
 using OpenAI_API;
 using OpenAI_API.Embedding;
-using OpenAI_API.Moderation;
 using SearchGallery.Persistence;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tesseract;
 
 namespace SearchGallery.Services
@@ -65,7 +57,7 @@ namespace SearchGallery.Services
                 similarities.Add((similarity, x.Id));
             });
 
-            return similarities.OrderByDescending(x => x.Item1).Select(x => x.Item2).ToList();
+            return similarities.OrderByDescending(x => x.Item1).Take(numberOfResults).Select(x => x.Item2).ToList();
         }
 
         private static double GetCosineSimilarity(float[] V1, float[] V2)

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using OpenAI_API;
 using SearchGallery.Persistence;
 using SearchGallery.Services;
 

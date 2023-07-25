@@ -1,12 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using SearchGallery.Persistence;
-using SearchGallery.Persistence.Entities;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using Microsoft.Extensions.Options;
 
@@ -15,13 +7,11 @@ namespace SearchGallery.Services
     public class FileService : IFileService
     {
         private readonly ILogger<FileService> _logger;
-        private readonly SearchGalleryDbContext _context;
         private readonly StorageConfiguration _config;
 
-        public FileService(ILogger<FileService> logger, SearchGalleryDbContext context, IOptions<StorageConfiguration> config)
+        public FileService(ILogger<FileService> logger, IOptions<StorageConfiguration> config)
         {
             _logger = logger;
-            _context = context;
             _config = config.Value;
         }
 

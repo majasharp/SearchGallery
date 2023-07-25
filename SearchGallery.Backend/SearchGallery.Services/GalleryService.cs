@@ -4,12 +4,6 @@ using Microsoft.Extensions.Logging;
 using MimeTypes;
 using SearchGallery.Persistence;
 using SearchGallery.Persistence.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SearchGallery.Services
 {
@@ -70,7 +64,7 @@ namespace SearchGallery.Services
             }
 
             return (await _context.GalleryItems
-                .Where(x => string.IsNullOrEmpty(query.FreeText) || x.SearchText.Contains(query.FreeText))
+                .Where(x => string.IsNullOrEmpty(query.FreeText) || x.SearchText.ToLower().Contains(query.FreeText.ToLower()))
                 .ToListAsync())
                 .Select(item => new GalleryItemDto
                 {
