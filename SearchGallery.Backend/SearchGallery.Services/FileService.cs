@@ -28,7 +28,7 @@ namespace SearchGallery.Services
                 await outgoingStream.DisposeAsync();
             }
 
-            await MakeThumbnailAsync(File.OpenRead(path), path);
+            MakeThumbnail(File.OpenRead(path), path);
             return path;
         }
 
@@ -47,7 +47,7 @@ namespace SearchGallery.Services
             }
         }
 
-        private async Task MakeThumbnailAsync(Stream stream, string path)
+        private void MakeThumbnail(Stream stream, string path)
         {
             var thumbPath = Path.ChangeExtension(path, "thumb");
 

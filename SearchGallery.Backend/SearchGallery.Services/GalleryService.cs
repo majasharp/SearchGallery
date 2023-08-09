@@ -50,7 +50,7 @@ namespace SearchGallery.Services
                 allVectors.ForEach(x => x.ConvertVectorString());
                 var searchVector = await _searchService.VectoriseAsync(query.FreeText);
 
-                var ids = _searchService.GetSearchResults(allVectors, searchVector, query.PageCount ?? 10);
+                var ids = _searchService.GetSearchResults(allVectors, searchVector, query.PageCount ?? 5);
 
                 return (await _context.GalleryItems.Where(x => ids.Contains(x.Id)).ToListAsync()).Select(i => new GalleryItemDto
                 {

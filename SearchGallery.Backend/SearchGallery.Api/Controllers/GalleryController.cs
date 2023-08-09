@@ -19,30 +19,62 @@ namespace SearchGallery.Api.Controllers
         [HttpGet("{guid}")]
         public async Task<IActionResult> GetGalleryItem(Guid guid, [FromQuery] bool tryDownloadThumbnail)
         {
-            var result = await _service.GetGalleryItemAsync(guid, tryDownloadThumbnail);
-            return File(result.Item1, result.Item2);
+            try
+            {
+                var result = await _service.GetGalleryItemAsync(guid, tryDownloadThumbnail);
+                return File(result.Item1, result.Item2);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred in the retrieval of a GalleryItem with id: {guid}");
+                return StatusCode(500);
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> GetGalleryItems(SearchQuery query)
         {
-            var result = await _service.GetGalleryItemsAsync(query);
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetGalleryItemsAsync(query);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred in the retrieval of multiple GalleryItems with SearchQuery: {query.FreeText}");
+                return StatusCode(500);
+            }
         }
 
         [HttpPost("upload")]
         public async Task<IActionResult> UploadGalleryItem(IFormFile file)
         {
-            var stream = file.OpenReadStream();
-            var result = await _service.UploadGalleryItemAsync(stream, file.FileName);
-            return Ok(result);
+            try
+            {
+                var stream = file.OpenReadStream();
+                var result = await _service.UploadGalleryItemAsync(stream, file.FileName);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred in the upload of a file.");
+                return StatusCode(500);
+            }
         }
 
         [HttpDelete("{guid}")]
         public async Task<IActionResult> DeleteGalleryItem(Guid guid)
         {
-            await _service.DeleteGalleryItemAsync(guid);
-            return Ok();
+            try
+            {
+                await _service.DeleteGalleryItemAsync(guid);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred in the deletion of GalleryItem with id: {guid}");
+                return StatusCode(500);
+            }
         }
     }
 }

@@ -19,7 +19,7 @@
                     </CFormSelect>
                 </CCol>
                 <CCol xs="2" class="mt-2">
-                    <CFormSwitch v-model="smartSearchEnabled" label="Search with ChatGPT"/>
+                    <CFormSwitch v-model="smartSearchEnabled" label="Use Vector Search"/>
                 </CCol>
             </CRow>
         </div>

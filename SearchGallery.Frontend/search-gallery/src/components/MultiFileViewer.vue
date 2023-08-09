@@ -113,22 +113,12 @@
       }
   
       function showImage(fileDetails, file) {
-        try {
-          if (fileDetails.contentType.includes('image')) {
-          const fileReader = new FileReader();
-          fileReader.addEventListener('load', () => {
-            fileDetails.src = fileReader.result;
-            filesToDisplay.value.push(fileDetails);
-          });
-          fileReader.readAsDataURL(file);
-        } else {
-          fileDetails.src = '/file-icon.jpg';
+        const fileReader = new FileReader();
+        fileReader.addEventListener('load', () => {
+          fileDetails.src = fileReader.result;
           filesToDisplay.value.push(fileDetails);
-        }
-        }
-        catch(error) {
-          console.log(error);
-        }
+        });
+        fileReader.readAsDataURL(file);
         emit('update:modelValue', filesToDisplay.value);
       }
   
