@@ -3,7 +3,6 @@ using OpenAI_API;
 using OpenAI_API.Embedding;
 using SearchGallery.Persistence;
 using System.Collections.Concurrent;
-using System.IO;
 using Tesseract;
 
 namespace SearchGallery.Services
